@@ -18,6 +18,12 @@ module.exports = {
         'build',
       ],
     ],
+    // 'type-case': [2, 'always', 'lower-case'],
+    // 'type-empty': [2, 'never'],
+    // 'scope-empty': [2, 'never'],
+    // 'subject-empty': [2, 'never'],
+    // 'subject-full-stop': [2, 'never', '.'],
+    // 'header-max-length': [2, 'always', 72],
     'type-case': [2, 'always', 'lower-case'],
     'type-empty': [2, 'never'],
     'scope-empty': [2, 'never'],
@@ -37,3 +43,4 @@ module.exports = {
 // scope-empty: Scope không được để trống.
 // subject-empty: Subject không được để trống.
 // subject-full-stop: Subject không được kết thúc bằng dấu chấm.
+//correct commit: rules(subject): message

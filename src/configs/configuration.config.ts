@@ -5,6 +5,10 @@ export interface DatabaseConfig {
   username: string;
   password: number;
 }
+export interface JwtConfig {
+  secret: string;
+  expiresIn: string;
+}
 export const database_config = () => ({
   database: {
     type: process.env.DATABASE_TYPE,
@@ -19,3 +23,9 @@ export const server_config = () => ({
     port: process.env.PORT,
   },
 });
+export const jwt_config = () => {
+  {
+    process.env.SECRET;
+    process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME;
+  }
+};
