@@ -1,8 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { CustomError } from 'src/helpers/res/error.res';
+import {
+  BAD_REQUEST,
+  NOT_FOUND_USER,
+  PASSWORD_WRONG,
+} from 'src/helpers/error.helper';
 import { SignUpDto } from 'src/modules/auth/dtos/sign-in.dto';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
 import { UsersService } from 'src/modules/users/users.service';
@@ -65,18 +69,14 @@ export class AuthService {
     email: string,
     password: string,
   ): Promise<UserEntity> {
-    try {
-      const user = await this.usersService.findOneByCondition({
-        where: { email: email },
-      });
-      if (!user) {
-        throw new BadRequestException('Wrong credentials!!');
-      }
-      await this.verifyPlainContentWithHashedContent(password, user?.password);
-      return user;
-    } catch (error) {
-      throw new BadRequestException('Wrong credentials!!' + error);
+    const user = await this.usersService.findOneByCondition({
+      where: { email: email },
+    });
+    if (!user) {
+      return NOT_FOUND_USER('Not found user !');
     }
+    await this.verifyPlainContentWithHashedContent(password, user?.password);
+    return user;
   }
 
   private async verifyPlainContentWithHashedContent(
@@ -85,7 +85,7 @@ export class AuthService {
   ) {
     const is_matching = await bcrypt.compare(plain_text, hashed_text);
     if (!is_matching) {
-      throw new BadRequestException();
+      return PASSWORD_WRONG('Password is wrong !');
     }
   }
 
@@ -96,7 +96,7 @@ export class AuthService {
         refreshToken: jwt,
       },
     });
-    if (user == null) throw new CustomError(400, 'User was blocked.', {});
+    if (user == null) return BAD_REQUEST('User was blocked.', {});
     //kiểm tra thời gian refreshExp trong db
 
     const refreshTokenJwt = await this.generateRefreshToken({

@@ -1,36 +1,20 @@
 import { Module } from '@nestjs/common';
-import { AppService } from './app.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import {
   database_config,
   jwt_config,
   server_config,
 } from 'src/configs/configuration.config';
-import { UsersModule } from './modules/users/users.module';
-import { TasksModule } from './modules/tasks/tasks.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from 'src/modules/users/entities/user.entity';
-import { TaskEntity } from 'src/modules/tasks/entities/task.entity';
+import { TypeORM } from 'src/configs/database.config';
 import { AuthModule } from './modules/auth/auth.module';
+import { TasksModule } from './modules/tasks/tasks.module';
+import { UsersModule } from './modules/users/users.module';
+import { APP_FILTER } from '@nestjs/core';
+import { GlobalExceptionFilter } from 'src/exception-filters/global-exception.filter';
 
 @Module({
   imports: [
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        return {
-          type: 'postgres', // Chỉnh lại theo database bạn dùng
-          host: configService.get<string>('database.host'),
-          port: configService.get<number>('database.port'),
-          username: configService.get<string>('database.username'),
-          password: configService.get<string>('database.password'),
-          database: 'faba_tech',
-          entities: [UserEntity, TaskEntity], // Chỉ định các entity của bạn
-          synchronize: true, // Chỉ nên bật trong môi trường development},
-        };
-      },
-    }),
+    TypeORM,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env.dev',
@@ -40,7 +24,11 @@ import { AuthModule } from './modules/auth/auth.module';
     TasksModule,
     AuthModule,
   ],
-  providers: [AppService],
-  controllers: [],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}

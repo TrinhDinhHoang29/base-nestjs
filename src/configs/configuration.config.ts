@@ -21,6 +21,7 @@ export const database_config = () => ({
 export const server_config = () => ({
   server: {
     port: process.env.PORT,
+    env: process.env.NODE_ENV,
   },
 });
 export const jwt_config = () => ({

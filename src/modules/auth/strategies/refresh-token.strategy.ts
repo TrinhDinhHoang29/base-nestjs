@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
 import { AuthService } from 'src/modules/auth/auth.service';
 import { Request } from 'express';
-import { CustomError } from 'src/helpers/res/error.res';
+import { BAD_REQUEST } from 'src/helpers/error.helper';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -25,7 +25,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
       const refreshToken = req.headers.authorization?.split(' ')[1]; // Lấy token từ header
 
       if (!refreshToken) {
-        throw new CustomError(400, `Refresh token not provided`, {});
+        return BAD_REQUEST(`Refresh token not provided`, 400);
       }
 
       const user = await this.authService.refreshToken(
@@ -35,17 +35,9 @@ export class RefreshTokenStrategy extends PassportStrategy(
       return { ...user };
     } catch (error: unknown) {
       if (error instanceof Error) {
-        throw new CustomError(
-          400,
-          `Authentication failed: ${error.message}`,
-          {},
-        );
+        return BAD_REQUEST(`Authentication failed:`, {});
       }
-      throw new CustomError(
-        400,
-        `Authentication failed due to unknown error`,
-        {},
-      );
+      return BAD_REQUEST('Refresh cant not successful');
     }
   }
 }

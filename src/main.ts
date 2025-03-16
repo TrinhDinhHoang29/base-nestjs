@@ -1,9 +1,9 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
-import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
 import { documentFactory } from 'src/configs/swagger.config';
+import { ValidationTransformPipe } from 'src/pipes/validation.pipe';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,13 +13,7 @@ async function bootstrap() {
       persistAuthorization: true,
     },
   });
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      skipMissingProperties: true,
-      skipNullProperties: true,
-    }),
-  );
+  app.useGlobalPipes(ValidationTransformPipe);
   const configService = app.get(ConfigService);
 
   await app.listen(configService.get('server.port') ?? 3000);
