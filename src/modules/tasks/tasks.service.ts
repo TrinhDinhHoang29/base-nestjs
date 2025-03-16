@@ -13,9 +13,9 @@ export class TasksService extends BaseRepositoryAbstract<TaskEntity> {
   ) {
     super(taskRepository);
   }
-  async createTasks(createTaskDto: CreateTaskDto): Promise<TaskEntity> {
+  createTasks(createTaskDto: CreateTaskDto): TaskEntity {
     const newTaskEntity = new TaskEntity(createTaskDto);
-    const result = await this.taskRepository.create(newTaskEntity);
+    const result = this.taskRepository.create(newTaskEntity);
     return result;
   }
   async getAll(): Promise<TaskEntity[]> {

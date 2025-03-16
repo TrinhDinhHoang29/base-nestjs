@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UsersService } from 'src/modules/users/users.service';
-import * as bcrypt from 'bcryptjs';
-import { UserEntity } from 'src/modules/users/entities/user.entity';
-import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcryptjs';
+import { CustomError } from 'src/helpers/res/error.res';
 import { SignUpDto } from 'src/modules/auth/dtos/sign-in.dto';
-import { SignInDto } from 'src/modules/auth/dtos/sign-up.dto';
+import { UserEntity } from 'src/modules/users/entities/user.entity';
+import { UsersService } from 'src/modules/users/users.service';
 
 @Injectable()
 export class AuthService {
@@ -16,55 +16,51 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
   async signUp(signUpDto: SignUpDto) {
-    try {
-      const existedUser = await this.usersService.findOneByCondition({
-        where: {
-          email: signUpDto.email,
-        },
-      });
-      if (existedUser) {
-        throw {
-          status: 401,
-          message: 'Email already existed!!',
-        };
-      }
-      const hashed_password = await bcrypt.hash(
-        signUpDto.password,
-        this.SALT_ROUND,
-      );
-      const newUserEntity = new UserEntity(signUpDto);
-      newUserEntity.password = hashed_password;
-      const user = await this.usersService.create(newUserEntity);
-      return user;
-    } catch (error) {
-      throw error;
+    const existedUser = await this.usersService.findOneByCondition({
+      where: {
+        email: signUpDto.email,
+      },
+    });
+    if (existedUser) {
+      throw new Error('Email already existed!!');
     }
+    const hashed_password = await bcrypt.hash(
+      signUpDto.password,
+      this.SALT_ROUND,
+    );
+    const newUserEntity = new UserEntity(signUpDto);
+    newUserEntity.password = hashed_password;
+    const user = await this.usersService.create(newUserEntity);
+    return user;
   }
-  // async signIn(signInDto: SignInDto) {
-  //   try {
-  //     const existedUser = await this.usersService.findOneByCondition({
-  //       where: {
-  //         email: signUpDto.email,
-  //       },
-  //     });
-  //     if (existedUser) {
-  //       throw {
-  //         status: 401,
-  //         message: 'Email already existed!!',
-  //       };
-  //     }
-  //     const hashed_password = await bcrypt.hash(
-  //       signUpDto.password,
-  //       this.SALT_ROUND,
-  //     );
-  //     const newUserEntity = new UserEntity(signUpDto);
-  //     newUserEntity.password = hashed_password;
-  //     const user = await this.usersService.create(newUserEntity);
-  //     return user;
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+
+  async signIn(user: UserEntity) {
+    const refreshToken = await this.generateRefreshToken({
+      id: user.id,
+      fullName: user.fullname,
+      email: user.email,
+    });
+
+    // const sessionExpiresAt = dayjs().add(30, 'days').toDate(); // Ví dụ: Hết hạn sau 30 ngày
+
+    // console.log(sessionExpiresAt);
+    await this.usersService.update(user.id, {
+      refreshToken: refreshToken,
+      // refreshTokenExp: sessionExpiresAt,
+    });
+
+    return {
+      accessToken: await this.generateAccessToken({
+        id: user.id,
+        fullName: user.fullname,
+        email: user.email,
+      }),
+      accessTokenExp: this.configService.get<string>('jwt.expiresIn'),
+      refreshToken: refreshToken,
+      // refreshTokenExp: sessionExpiresAt,
+    };
+  }
+
   async getAuthenticatedUser(
     email: string,
     password: string,
@@ -77,7 +73,6 @@ export class AuthService {
         throw new BadRequestException('Wrong credentials!!');
       }
       await this.verifyPlainContentWithHashedContent(password, user?.password);
-      console.log(user);
       return user;
     } catch (error) {
       throw new BadRequestException('Wrong credentials!!' + error);
@@ -94,13 +89,59 @@ export class AuthService {
     }
   }
 
-  generateAccessToken(payload) {
-    return this.jwtService.sign(payload);
+  async refreshToken(jwt, userId: string) {
+    const user: UserEntity | null = await this.usersService.findOneByCondition({
+      where: {
+        id: userId,
+        refreshToken: jwt,
+      },
+    });
+    if (user == null) throw new CustomError(400, 'User was blocked.', {});
+    //kiểm tra thời gian refreshExp trong db
+
+    const refreshTokenJwt = await this.generateRefreshToken({
+      id: user.id,
+      fullName: user.fullname,
+      email: user.email,
+    });
+
+    await this.usersService.update(user.id, {
+      refreshToken: refreshTokenJwt,
+    });
+
+    return {
+      accessToken: await this.generateAccessToken({
+        id: user.id,
+        fullName: user.fullname,
+        email: user.email,
+      }),
+      accessTokenExp: this.configService.get<string>('jwt.expiresIn'),
+      refreshToken: refreshTokenJwt,
+    };
   }
-  // payload: TokenPayload
-  generateRefreshToken(payload) {
-    return this.jwtService.sign(payload, {
-      secret: 'refresh_token_secret',
+
+  private generateAccessToken(payload: {
+    id: string;
+    fullName: string;
+    email: string;
+  }) {
+    return this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('jwt.secret'),
+      expiresIn: this.configService.get<string>('jwt.expiresIn'),
     });
   }
+  // payload: TokenPayload
+
+  private generateRefreshToken(payload: {
+    id: string;
+    fullName: string;
+    email: string;
+  }) {
+    return this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('refresh.secret'),
+      expiresIn: this.configService.get<string>('refresh.expiresIn'),
+    });
+  }
+
+  //Khi người dùng gửi lên đúng với
 }

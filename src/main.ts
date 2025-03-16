@@ -9,6 +9,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   SwaggerModule.setup('swagger', app, documentFactory(app), {
     jsonDocumentUrl: 'swagger/json',
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
   });
   app.useGlobalPipes(
     new ValidationPipe({

@@ -7,11 +7,11 @@ export class TasksController {
   constructor(private readonly taskServices: TasksService) {}
 
   @Get()
-  async getAllTask() {
-    return await this.taskServices.getAll();
+  getAllTask() {
+    return this.taskServices.getAll();
   }
   @Post()
-  async createTask(@Body() createTaskDto: CreateTaskDto) {
-    return await this.taskServices.createTasks(createTaskDto);
+  createTask(@Body() createTaskDto: CreateTaskDto) {
+    return this.taskServices.createTasks(createTaskDto);
   }
 }

@@ -5,7 +5,15 @@ export const documentFactory = (app) => {
     .setTitle('Cats example')
     .setDescription('The cats API description')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        in: 'header',
+      },
+      'access-token', // Tên security scheme
+    )
     .build();
   return SwaggerModule.createDocument(app, config);
 };

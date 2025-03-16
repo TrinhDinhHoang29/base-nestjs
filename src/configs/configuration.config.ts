@@ -23,9 +23,13 @@ export const server_config = () => ({
     port: process.env.PORT,
   },
 });
-export const jwt_config = () => {
-  {
-    process.env.SECRET;
-    process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME;
-  }
-};
+export const jwt_config = () => ({
+  jwt: {
+    secret: process.env.SECRET,
+    expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME,
+  },
+  refresh: {
+    secret: process.env.REFRESH_SECRET,
+    expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME,
+  },
+});

@@ -3,6 +3,7 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import {
   database_config,
+  jwt_config,
   server_config,
 } from 'src/configs/configuration.config';
 import { UsersModule } from './modules/users/users.module';
@@ -33,7 +34,7 @@ import { AuthModule } from './modules/auth/auth.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env.dev',
-      load: [database_config, server_config],
+      load: [database_config, server_config, jwt_config],
     }),
     UsersModule,
     TasksModule,

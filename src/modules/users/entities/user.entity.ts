@@ -12,6 +12,12 @@ export class UserEntity extends BaseEntity {
   password: string;
   @Column({ name: 'avatar', nullable: true })
   avatar: string;
+  @Column({ name: 'refresh_token', nullable: true })
+  refreshToken: string;
+
+  @Column({ name: 'refresh_token_exp', nullable: true })
+  refreshTokenExp: Date;
+
   @OneToMany(() => TaskEntity, (task) => task.user)
   tasks: TaskEntity[];
   constructor(user?: DeepPartial<UserEntity>) {
