@@ -2,7 +2,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
-import { AuthService } from 'src/modules/auth/auth.service';
+import { AuthService } from 'src/modules/auth/services/auth.service';
 import { Request } from 'express';
 import { BAD_REQUEST } from 'src/helpers/error.helper';
 

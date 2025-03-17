@@ -9,7 +9,7 @@ import {
 } from 'src/helpers/error.helper';
 import { SignUpDto } from 'src/modules/auth/dtos/sign-in.dto';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
-import { UsersService } from 'src/modules/users/users.service';
+import { UsersService } from 'src/modules/users/services/users.service';
 
 @Injectable()
 export class AuthService {

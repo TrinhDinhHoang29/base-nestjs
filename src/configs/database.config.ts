@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TaskEntity } from 'src/modules/tasks/entities/task.entity';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
 
-export const TypeORM = TypeOrmModule.forRootAsync({
+export const ConnectToTypeORM = TypeOrmModule.forRootAsync({
   imports: [ConfigModule],
   inject: [ConfigService],
   useFactory: (configService: ConfigService) => {

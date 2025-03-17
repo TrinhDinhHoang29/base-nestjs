@@ -5,11 +5,11 @@ import { SignInDto } from 'src/modules/auth/dtos/sign-up.dto';
 import { LocalAuthGuard } from 'src/modules/auth/guards/local.guard';
 import { RefreshTokenAuthGuard } from 'src/modules/auth/guards/refresh-token.guard';
 import { UserEntity } from 'src/modules/users/entities/user.entity';
-import { AuthService } from './auth.service';
+import { AuthService } from '../../services/auth.service';
 import { CREATED, OK } from 'src/helpers/success.helper';
 
 @Controller('auth')
-export class AuthController {
+export class AuthControllerV1 {
   constructor(private readonly authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)

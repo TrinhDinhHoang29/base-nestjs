@@ -5,7 +5,7 @@ import {
   jwt_config,
   server_config,
 } from 'src/configs/configuration.config';
-import { TypeORM } from 'src/configs/database.config';
+import { ConnectToTypeORM } from 'src/configs/database.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { UsersModule } from './modules/users/users.module';
@@ -14,7 +14,7 @@ import { GlobalExceptionFilter } from 'src/exception-filters/global-exception.fi
 
 @Module({
   imports: [
-    TypeORM,
+    ConnectToTypeORM,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env.dev',
