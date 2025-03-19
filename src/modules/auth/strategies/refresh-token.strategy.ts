@@ -1,7 +1,7 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
-import { UserEntity } from 'src/modules/users/entities/user.entity';
+import { User } from 'src/modules/users/entities/user.entity';
 import { AuthService } from 'src/modules/auth/services/auth.service';
 import { Request } from 'express';
 import { BAD_REQUEST } from 'src/helpers/error.helper';
@@ -20,7 +20,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
     });
   }
 
-  async validate(req: Request, payload: UserEntity) {
+  async validate(req: Request, payload: User) {
     try {
       const refreshToken = req.headers.authorization?.split(' ')[1]; // Lấy token từ header
 

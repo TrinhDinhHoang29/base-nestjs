@@ -1,7 +1,11 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TaskEntity } from 'src/modules/tasks/entities/task.entity';
-import { UserEntity } from 'src/modules/users/entities/user.entity';
+import { RestaurantAssignment } from 'src/modules/restaurant_assignments/entities/restaurant_assignment.entity';
+import { Restaurant } from 'src/modules/restaurants/entities/restaurant.entity';
+import { RestaurantAddress } from 'src/modules/restaurants/entities/restaurant_addresses.entity';
+import { RestaurantPartnership } from 'src/modules/restaurants/entities/restaurant_partnerships.entity';
+import { ScrapedData } from 'src/modules/scraped_data/entities/scraped_data.entity';
+import { User } from 'src/modules/users/entities/user.entity';
 
 export const ConnectToTypeORM = TypeOrmModule.forRootAsync({
   imports: [ConfigModule],
@@ -14,7 +18,14 @@ export const ConnectToTypeORM = TypeOrmModule.forRootAsync({
       username: configService.get<string>('database.username'),
       password: configService.get<string>('database.password'),
       database: 'faba_tech',
-      entities: [UserEntity, TaskEntity], // Chỉ định các entity của bạn
+      entities: [
+        User,
+        Restaurant,
+        RestaurantAddress,
+        RestaurantAssignment,
+        RestaurantPartnership,
+        ScrapedData,
+      ], // Chỉ định các entity của bạn
       synchronize: true, // Chỉ nên bật trong môi trường development},
     };
   },

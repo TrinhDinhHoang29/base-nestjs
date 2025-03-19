@@ -4,7 +4,7 @@ import { SignUpDto } from 'src/modules/auth/dtos/sign-in.dto';
 import { SignInDto } from 'src/modules/auth/dtos/sign-up.dto';
 import { LocalAuthGuard } from 'src/modules/auth/guards/local.guard';
 import { RefreshTokenAuthGuard } from 'src/modules/auth/guards/refresh-token.guard';
-import { UserEntity } from 'src/modules/users/entities/user.entity';
+import { User } from 'src/modules/users/entities/user.entity';
 import { AuthService } from '../../services/auth.service';
 import { CREATED, OK } from 'src/helpers/success.helper';
 
@@ -16,7 +16,7 @@ export class AuthControllerV1 {
   @Post('sign-in')
   async signIn(@Body() signIn: SignInDto, @Request() req) {
     console.log(signIn);
-    const user: UserEntity = req.user;
+    const user: User = req.user;
     return OK('Sign in successful.', {
       ...(await this.authService.signIn(user)),
     });

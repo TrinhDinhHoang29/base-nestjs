@@ -1,26 +1,33 @@
 import { BaseEntity } from 'src/base/base.entity';
-import { TaskEntity } from 'src/modules/tasks/entities/task.entity';
-import { Column, DeepPartial, Entity, OneToMany } from 'typeorm';
+import { Column, DeepPartial, Entity } from 'typeorm';
 
 @Entity({ name: 'users' })
-export class UserEntity extends BaseEntity {
+export class User extends BaseEntity {
   @Column({ name: 'fullname' })
   fullname: string;
+
   @Column({ name: 'email', unique: true })
   email: string;
+
   @Column({ name: 'password' })
   password: string;
+
+  @Column({ type: 'varchar', length: 10, nullable: false })
+  role: 'admin' | 'sales';
+
   @Column({ name: 'avatar', nullable: true })
   avatar: string;
+
+  @Column({ name: 'nation' })
+  nation: string;
+
   @Column({ name: 'refresh_token', nullable: true })
   refreshToken: string;
 
   @Column({ name: 'refresh_token_exp', nullable: true })
   refreshTokenExp: Date;
 
-  @OneToMany(() => TaskEntity, (task) => task.user)
-  tasks: TaskEntity[];
-  constructor(user?: DeepPartial<UserEntity>) {
+  constructor(user?: DeepPartial<User>) {
     super();
     if (user) {
       Object.assign(this, user);

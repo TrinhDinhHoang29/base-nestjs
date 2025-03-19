@@ -8,7 +8,7 @@ import {
   PASSWORD_WRONG,
 } from 'src/helpers/error.helper';
 import { SignUpDto } from 'src/modules/auth/dtos/sign-in.dto';
-import { UserEntity } from 'src/modules/users/entities/user.entity';
+import { User } from 'src/modules/users/entities/user.entity';
 import { UsersService } from 'src/modules/users/services/users.service';
 
 @Injectable()
@@ -32,13 +32,13 @@ export class AuthService {
       signUpDto.password,
       this.SALT_ROUND,
     );
-    const newUserEntity = new UserEntity(signUpDto);
+    const newUserEntity = new User(signUpDto);
     newUserEntity.password = hashed_password;
     const user = await this.usersService.create(newUserEntity);
     return user;
   }
 
-  async signIn(user: UserEntity) {
+  async signIn(user: User) {
     const refreshToken = await this.generateRefreshToken({
       id: user.id,
       fullName: user.fullname,
@@ -65,10 +65,7 @@ export class AuthService {
     };
   }
 
-  async getAuthenticatedUser(
-    email: string,
-    password: string,
-  ): Promise<UserEntity> {
+  async getAuthenticatedUser(email: string, password: string): Promise<User> {
     const user = await this.usersService.findOneByCondition({
       where: { email: email },
     });
@@ -90,7 +87,7 @@ export class AuthService {
   }
 
   async refreshToken(jwt, userId: string) {
-    const user: UserEntity | null = await this.usersService.findOneByCondition({
+    const user: User | null = await this.usersService.findOneByCondition({
       where: {
         id: userId,
         refreshToken: jwt,

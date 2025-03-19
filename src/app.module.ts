@@ -7,10 +7,12 @@ import {
 } from 'src/configs/configuration.config';
 import { ConnectToTypeORM } from 'src/configs/database.config';
 import { AuthModule } from './modules/auth/auth.module';
-import { TasksModule } from './modules/tasks/tasks.module';
 import { UsersModule } from './modules/users/users.module';
 import { APP_FILTER } from '@nestjs/core';
 import { GlobalExceptionFilter } from 'src/exception-filters/global-exception.filter';
+import { RestaurantsModule } from './modules/restaurants/restaurants.module';
+import { RestaurantAssignmentsModule } from './modules/restaurant_assignments/restaurant_assignments.module';
+import { ScrapedDataModule } from './modules/scraped_data/scraped_data.module';
 
 @Module({
   imports: [
@@ -21,8 +23,10 @@ import { GlobalExceptionFilter } from 'src/exception-filters/global-exception.fi
       load: [database_config, server_config, jwt_config],
     }),
     UsersModule,
-    TasksModule,
     AuthModule,
+    RestaurantsModule,
+    RestaurantAssignmentsModule,
+    ScrapedDataModule,
   ],
   providers: [
     {

@@ -1,7 +1,7 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
-import { UserEntity } from 'src/modules/users/entities/user.entity';
+import { User } from 'src/modules/users/entities/user.entity';
 
 @Injectable()
 export class JwtStrategyAccessToken extends PassportStrategy(Strategy) {
@@ -13,7 +13,7 @@ export class JwtStrategyAccessToken extends PassportStrategy(Strategy) {
     });
   }
 
-  validate(payload: UserEntity) {
+  validate(payload: User) {
     return payload;
   }
 }
